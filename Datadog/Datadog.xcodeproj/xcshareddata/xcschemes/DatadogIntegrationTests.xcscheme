@@ -93,6 +93,23 @@
                BlueprintName = "DatadogIntegrationTests"
                ReferencedContainer = "container:Datadog.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "LoggingScenarioTests">
+               </Test>
+               <Test
+                  Identifier = "RUMManualInstrumentationScenarioTests">
+               </Test>
+               <Test
+                  Identifier = "RUMNavigationControllerScenarioTests">
+               </Test>
+               <Test
+                  Identifier = "TracingManualInstrumentationScenarioTests">
+               </Test>
+               <Test
+                  Identifier = "TracingURLSessionScenarioTests">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>
