@@ -106,7 +106,7 @@ workflows:
         - generate_code_coverage_files: 'yes'
         - project_path: Datadog.xcworkspace
         - xcpretty_test_options: --color --report html --output "${BITRISE_DEPLOY_DIR}/Unit-tests.html"
-        # - headless_mode: 'no' # TODO: RUMM-827 Try non-headless mode, so the Simulator works in foreground
+        - headless_mode: 'no'
 
     # - xcode-test:
     #     title: Run benchmarks - DatadogBenchmarkTests on iOS Simulator
