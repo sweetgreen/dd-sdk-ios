@@ -21,7 +21,7 @@ protocol AppConfiguration {
 /// The configuration used when running the Example app (⌘+R).
 struct ExampleAppConfiguration: AppConfiguration {
     let serviceName = "ios-sdk-example-app"
-    let testScenario = Environment.testScenario()
+    let testScenario: TestScenario? = LoggingScenario()
 
     func sdkConfiguration() -> Datadog.Configuration {
         let configuration = Datadog.Configuration

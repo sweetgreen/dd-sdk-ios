@@ -88,6 +88,14 @@ class ExampleAppDelegate: UIResponder, UIApplicationDelegate {
         }
         window?.rootViewController = storyboard.instantiateInitialViewController()!
     }
+
+    func applicationWillResignActive(_ application: UIApplication) {
+        print("🧪 willResignActive")
+    }
+
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        print("🧪 didBecomeActive")
+    }
 }
 
 /// Bridges Swift objects to Objective-C.

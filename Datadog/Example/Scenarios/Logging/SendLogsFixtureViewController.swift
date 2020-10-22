@@ -6,23 +6,104 @@
 
 import UIKit
 
+let stringKey = "string-v9"
+
+func addString(_ value: String) {
+    let current = readString()
+    let next = current + [value]
+    UserDefaults.standard.set(next, forKey: stringKey)
+    UserDefaults.standard.synchronize()
+}
+
+func readString() -> [String] {
+    UserDefaults.standard.stringArray(forKey: stringKey) ?? []
+}
+
 internal class SendLogsFixtureViewController: UIViewController {
+    let queue1 = DispatchQueue(label: "pl.something.background-some1")
+    let queue2 = DispatchQueue(label: "com.datadoghq.background-some1")
+
+    let session = UUID()
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        let strings = readString().map { "🧪    → \($0)" }
+        print("🧪 readString() → \n\(strings.joined(separator: "\n"))")
+
         // Send logs
-        logger.addTag(withKey: "tag1", value: "tag-value")
-        logger.add(tag: "tag2")
 
-        logger.addAttribute(forKey: "logger-attribute1", value: "string value")
-        logger.addAttribute(forKey: "logger-attribute2", value: 1_000)
-        logger.addAttribute(forKey: "some-url", value: URL(string: "https://example.com/image.png")!)
+//        NotificationCenter.default
+//            .addObserver(self, selector: #selector(handleWillResignActive), name: UIApplication.willResignActiveNotification, object: nil)
+//
+//        NotificationCenter.default
+//            .addObserver(self, selector: #selector(handleDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
 
-        logger.debug("debug message", attributes: ["attribute": "value"])
-        logger.info("info message", attributes: ["attribute": "value"])
-        logger.notice("notice message", attributes: ["attribute": "value"])
-        logger.warn("warn message", attributes: ["attribute": "value"])
-        logger.error("error message", attributes: ["attribute": "value"])
-        logger.critical("critical message", attributes: ["attribute": "value"])
+//        (0..<180).forEach { iteration in
+//            scheduleTimer(named: "\(iteration)s", after: TimeInterval(iteration))
+//        }
+//        scheduleTimer(named: "10s", after: 10)
+//        scheduleTimer(named: "20s", after: 20)
+//        scheduleTimer(named: "120s", after: 120)
+//        scheduleTimer(named: "180s", after: 180)
+//        scheduleTimer(named: "300s", after: 300)
+    }
+
+    var taskIDByName: [String: UIBackgroundTaskIdentifier] = [:]
+
+    func scheduleTimer(named taskName: String, after deadline: TimeInterval) {
+        let app = UIApplication.shared
+
+        queue2.asyncAfter(deadline: .now() + deadline) {
+            logger.debug("\(deadline)s timer, session: \(self.session.uuidString)")
+        }
+
+        let taskID = app.beginBackgroundTask(withName: taskName) {
+            let taskID = self.taskIDByName[taskName]!
+            app.endBackgroundTask(taskID)
+
+            addString("Invalidating task: \(taskName), session: \(self.session.uuidString)")
+
+            self.taskIDByName[taskName] = UIBackgroundTaskIdentifier.invalid
+        }
+        taskIDByName[taskName] = taskID
+
+        queue1.asyncAfter(deadline: .now() + deadline) {
+            print("🧪 fired based on ABSOLUTE time (\(deadline)s)!")
+
+            addString("\(deadline)s timer, session: \(self.session.uuidString)")
+
+            let taskID = self.taskIDByName[taskName]!
+            app.endBackgroundTask(taskID)
+            self.taskIDByName[taskName] = UIBackgroundTaskIdentifier.invalid
+        }
+    }
+
+    @objc
+    func handleWillResignActive() {
+//        stopTimer()
+        logger.debug("UIApplication.willResignActive, session: \(session.uuidString)")
+    }
+
+    @objc
+    func handleDidBecomeActive() {
+//        startTimer()
+        logger.debug("UIApplication.didBecomeActive, session: \(session.uuidString)")
+    }
+
+    var timer: Timer!
+    var counter = 0
+
+    func startTimer() {
+        timer = Timer(timeInterval: 1, repeats: true) { [unowned self] timer in
+            self.counter += 1
+            print("🧪 count: \(self.counter)")
+            logger.debug("counter: \(self.counter)")
+        }
+        RunLoop.current.add(timer, forMode: .common)
+    }
+
+    func stopTimer() {
+        timer.invalidate()
     }
 }
