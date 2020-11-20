@@ -27,7 +27,10 @@ internal struct SpanBuilder {
     func createSpan(from ddspan: DDSpan, finishTime: Date) -> Span {
         let tagsReducer = SpanTagsReducer(spanTags: ddspan.tags, logFields: ddspan.logFields)
 
-        var jsonStringEncodedTags: [String: JSONStringEncodableValue] = [:]
+        var jsonStringEncodedTags: [String: JSONStringEncodableValue]
+        jsonStringEncodedTags = userInfoProvider.extraInfo.compactMapValues {
+            JSONStringEncodableValue($0, encodedUsing: tagsJSONEncoder)
+        }
 
         // First, add baggage items as tags...
         for (itemKey, itemValue) in ddspan.ddContext.baggageItems.all {

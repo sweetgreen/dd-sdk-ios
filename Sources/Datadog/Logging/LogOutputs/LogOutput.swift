@@ -8,7 +8,7 @@ import Foundation
 
 internal struct LogAttributes {
     /// Log attributes received from the user. They are subject for sanitization.
-    let userAttributes: [String: Encodable]
+    var userAttributes: [String: Encodable]
     /// Log attributes added internally by the SDK. They are not a subject for sanitization.
     let internalAttributes: [String: Encodable]?
 }

@@ -24,6 +24,9 @@ internal struct LogBuilder {
     let carrierInfoProvider: CarrierInfoProviderType?
 
     func createLogWith(level: LogLevel, message: String, date: Date, attributes: LogAttributes, tags: Set<String>) -> Log {
+        let extraUserInfo = userInfoProvider.extraInfo
+        var mergedAttributes = attributes
+        mergedAttributes.userAttributes.merge(extraUserInfo) { userAttr, _ in userAttr }
         return Log(
             date: date,
             status: logStatus(for: level),
@@ -37,7 +40,7 @@ internal struct LogBuilder {
             userInfo: userInfoProvider.value,
             networkConnectionInfo: networkConnectionInfoProvider?.current,
             mobileCarrierInfo: carrierInfoProvider?.current,
-            attributes: attributes,
+            attributes: mergedAttributes,
             tags: !tags.isEmpty ? Array(tags) : nil
         )
     }
