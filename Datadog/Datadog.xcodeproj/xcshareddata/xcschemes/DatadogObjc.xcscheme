@@ -68,7 +68,7 @@
          <EnvironmentVariable
             key = "DD_DISABLE_NETWORK_INSTRUMENTATION"
             value = "1"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "DD_DISABLE_HEADERS_INJECTION"
